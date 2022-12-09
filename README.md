@@ -1,4 +1,4 @@
-# Jarkom-Modul-4-E12-2022
+# Jarkom-Modul-5-E12-2022
 
 Kelas Jaringan Komputer E - Kelompok E12
 ### Nama Anggota
@@ -39,7 +39,7 @@ Pembagian IP tiap node disesuaikan dengan pembagian subnet berdasarkan pohon di 
 
 <img width="909" alt="image" src="https://user-images.githubusercontent.com/90702710/206747694-d9b6a3e2-1889-4886-b9ef-e0548c00bfef.png">
 
-### Konfigurasi
+### Konfigurasi Network Interfaces
 
 - Strix
 ```
@@ -142,3 +142,172 @@ iface eth0 inet static
 auto eth0
 iface eth0 inet dhcp
 ```
+
+### Strix
+Routing dan instalasi DHCP relay.
+```
+#!/bin/bash
+
+route add -net 192.198.4.0 netmask 255.255.252.0 gw 192.198.0.105
+route add -net 192.198.0.128 netmask 255.255.255.128 gw 192.198.0.105
+route add -net 192.198.0.112 netmask 255.255.255.248 gw 192.198.0.105
+
+route add -net 192.198.2.0 netmask 255.255.254.0 gw 192.198.0.109
+route add -net 192.198.0.120 netmask 255.255.255.248 gw 192.198.0.109
+route add -net 192.198.1.0 netmask 255.255.255.0 gw 192.198.0.109
+
+iptables -t nat -A POSTROUTING -s 192.198.0.0/21 -o eth0 -j SNAT --to-source 192.168.122.50
+
+echo nameserver 192.168.122.1 > /etc/resolv.conf
+
+# Pengaturan DHCP Relay
+    apt-get update
+    apt-get install isc-dhcp-relay -y
+    service isc-dhcp-relay start
+
+    dpkg --configure -a
+    echo "
+    SERVERS=\"192.198.0.115\" 
+    INTERFACES=\"eth1 eth2\"
+    "> /etc/default/isc-dhcp-relay  
+    
+    service isc-dhcp-relay restart
+```
+
+### Ostania
+Routing dan instalasi DHCP relay.
+```
+#!/bin/bash
+
+route add -net 0.0.0.0 netmask 0.0.0.0 gw 192.198.0.110
+
+echo nameserver 192.168.122.1 > /etc/resolv.conf
+
+# Pengaturan DHCP Relay
+    apt-get update
+    apt-get install isc-dhcp-relay -y
+    service isc-dhcp-relay start
+
+    dpkg --configure -a
+    echo "
+    SERVERS=\"192.198.0.115\"
+    INTERFACES=\"eth0 eth1 eth3\"
+    " > /etc/default/isc-dhcp-relay  
+    
+    service isc-dhcp-relay restart
+```
+
+### Westalis
+Routing dan instalasi DHCP relay.
+```
+#!/bin/bash
+
+route add -net 0.0.0.0 netmask 0.0.0.0 gw 192.198.0.106
+
+echo nameserver 192.168.122.1 > /etc/resolv.conf
+
+# Pengaturan DHCP Relay
+    apt-get update
+    apt-get install isc-dhcp-relay -y
+    service isc-dhcp-relay start
+
+    dpkg --configure -a
+    echo "
+    SERVERS=\"192.198.0.115\"     
+    INTERFACES=\"eth0 eth1 eth2 eth3\"
+    " > /etc/default/isc-dhcp-relay  
+    
+    service isc-dhcp-relay restart
+```
+
+### Eden
+Instalasi bind9 dan konfigurasi DNS Server
+#!/bin/bash
+
+    echo nameserver 192.168.122.1 > /etc/resolv.conf # IP di nameserver Strix
+
+    # Pengaturan DNS Server
+    
+    apt-get update
+    apt-get install bind9 -y
+    service bind9 start
+
+    # Mem-forward DNS ke DNS Strix
+    echo "options {
+    directory \"/var/cache/bind\";
+
+    forwarders {
+        192.168.122.1; // IP nameserver dari Strix
+    };
+
+    allow-query { any; };
+
+    auth-nxdomain no;   # conform to RFC1035
+    listen-on-v6 { any; };
+    };
+    " > /etc/bind/named.conf.options
+
+    service bind9 restart
+    ```
+ 
+ ### WISE
+ Instalasi isc-dhcp=server dan konfigurasi DHCP Server.
+ ```
+ #!/bin/bash
+
+    echo nameserver 192.198.0.114 > /etc/resolv.conf             # IP Eden
+
+    # Pengaturan DHCP Server
+    apt-get update
+    apt-get install isc-dhcp-server -y
+    echo "INTERFACES=\"eth0\"" > /etc/default/isc-dhcp-server
+
+    # Setting untuk setiap subnet
+    echo "
+    #}
+
+subnet 192.198.0.128 netmask 255.255.255.128 {
+    range 192.198.0.130 192.198.0.254;
+    option routers 192.198.0.129;
+    option broadcast-address 192.198.0.255;
+    option domain-name-servers 192.198.0.114;
+    default-lease-time 3600;
+    max-lease-time 6900;
+}
+
+subnet 192.198.4.0 netmask 255.255.252.0 {
+    range 192.198.4.2 192.198.7.254;
+    option routers 192.198.4.1;
+    option broadcast-address 192.198.7.255;
+    option domain-name-servers 192.198.0.114;
+    default-lease-time 3600;
+    max-lease-time 6900;
+}
+
+subnet 192.198.2.0 netmask 255.255.254.0 {
+    range 192.198.2.2 192.198.3.254;
+    option routers 192.198.2.1;
+    option broadcast-address 192.198.3.255;
+    option domain-name-servers 192.198.0.114;
+    default-lease-time 3600;
+    max-lease-time 6900;
+}
+
+subnet 192.198.1.0 netmask 255.255.255.0 {
+    range 192.198.1.2 192.198.1.254;
+    option routers 192.198.1.1;
+    option broadcast-address 192.198.1.255;
+    option domain-name-servers 192.198.0.114;
+    default-lease-time 3600;
+    max-lease-time 6900;
+}
+
+subnet 192.198.0.112 netmask 255.255.255.248 {
+    option routers 192.198.0.113;
+}
+" > /etc/dhcp/dhcpd.conf
+
+    service isc-dhcp-server start
+
+    service isc-dhcp-server restart
+ ```
