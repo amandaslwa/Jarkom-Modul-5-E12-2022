@@ -224,7 +224,7 @@ echo nameserver 192.168.122.1 > /etc/resolv.conf
 Instalasi bind9 dan konfigurasi DNS Server
 #!/bin/bash
 
-    echo nameserver 192.168.122.1 > /etc/resolv.conf # IP di nameserver Strix
+    echo nameserver 192.168.122.1 > /etc/resolv.conf
 
     # Pengaturan DNS Server
     
@@ -251,11 +251,11 @@ Instalasi bind9 dan konfigurasi DNS Server
     ```
  
  ### WISE
- Instalasi isc-dhcp=server dan konfigurasi DHCP Server.
+ Instalasi isc-dhcp-server dan konfigurasi DHCP Server.
  ```
  #!/bin/bash
 
-    echo nameserver 192.198.0.114 > /etc/resolv.conf             # IP Eden
+    echo nameserver 192.198.0.114 > /etc/resolv.conf
 
     # Pengaturan DHCP Server
     apt-get update
