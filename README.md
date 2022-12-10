@@ -6,7 +6,6 @@ Kelas Jaringan Komputer E - Kelompok E12
 - Michael Ariel Manihuruk       (5025201158)
 - Azzura Mahendra Putra Malinus (5025201211)
 
-# Modul 5
 ## VLSM (Variable Length Subnet Masking)
 
 <img width="502" alt="Subnetting" src="https://user-images.githubusercontent.com/90702710/206747007-e93ff352-522c-4fbe-b896-728ad36dfd28.png">
