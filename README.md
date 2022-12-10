@@ -357,6 +357,8 @@ Variabel ip_eth0 berisi IP address dari interface eth0 router Strix. Perintah ip
 ```
 iptables -t nat -A POSTROUTING -s 192.198.0.0/21 -o eth0 -j SNAT --to-source 192.168.122.50
 ```
+- Hasil
+<img width="433" alt="image" src="https://user-images.githubusercontent.com/90702710/206855052-88e950fc-1156-4add-a249-3c586f372725.png">
 
 #### 2. Kalian diminta untuk melakukan drop semua TCP dan UDP dari luar Topologi kalian pada server yang merupakan DHCP Server demi menjaga keamanan.
 - WISE
@@ -364,6 +366,9 @@ iptables -t nat -A POSTROUTING -s 192.198.0.0/21 -o eth0 -j SNAT --to-source 192
 iptables -A INPUT -p tcp --dport 80 -j DROP
 iptables -A INPUT -p udp --dport 80 -j DROP
 ```
+- Hasil
+Test ping google.com(https) vs ping monta.if.its.ac.id(http)
+<img width="422" alt="image" src="https://user-images.githubusercontent.com/90702710/206855206-2f0acf83-f4f2-40f7-b3d6-583ef3856bd6.png">
 
 #### 3. Loid meminta kalian untuk membatasi DHCP dan DNS Server hanya boleh menerima maksimal 2 koneksi ICMP secara bersamaan menggunakan iptables, selebihnya didrop.
 - WISE dan Eden
@@ -393,4 +398,17 @@ iptables -A PREROUTING -t nat -p tcp -d 192.198.0.123 --dport 443 -j DNAT --to-d
 
 iptables -t nat -A POSTROUTING -p tcp -d 192.198.0.122 -j SNAT --to-source 192.179.0.0
 iptables -t nat -A POSTROUTING -p tcp -d 192.198.0.123 -j SNAT --to-source 192.179.0.0
+```
+- Hasil
+Pada Garden, SSS, Blackbell, Briar
+```
+apt-get install netcat -y
+```
+Pada Garden dan SSS
+```
+nc -l -p 80
+```
+Pada Blackbell dan Briar
+```
+nc 192.198.8.1 80
 ```
