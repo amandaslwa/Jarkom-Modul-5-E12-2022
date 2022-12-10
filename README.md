@@ -39,7 +39,7 @@ Pembagian IP tiap node disesuaikan dengan pembagian subnet berdasarkan pohon di 
 
 <img width="909" alt="image" src="https://user-images.githubusercontent.com/90702710/206747694-d9b6a3e2-1889-4886-b9ef-e0548c00bfef.png">
 
-### Konfigurasi Network Interfaces
+## Konfigurasi Network Interfaces
 
 - Strix
 ```
@@ -344,8 +344,9 @@ subnet 192.198.0.112 netmask 255.255.255.248 {
 
     echo nameserver 192.198.0.114 > /etc/resolv.conf
 ```
-### Konfigurasi IP Tables
-#### 1. Agar topologi yang kalian buat dapat mengakses keluar, kalian diminta untuk mengkonfigurasi Strix menggunakan iptables, tetapi Loid tidak ingin menggunakan MASQUERADE.
+
+## Soal
+### 1. Agar topologi yang kalian buat dapat mengakses keluar, kalian diminta untuk mengkonfigurasi Strix menggunakan iptables, tetapi Loid tidak ingin menggunakan MASQUERADE.
 
 - Strix
 ```
@@ -360,7 +361,7 @@ iptables -t nat -A POSTROUTING -s 192.198.0.0/21 -o eth0 -j SNAT --to-source 192
 - Hasil
 <img width="433" alt="image" src="https://user-images.githubusercontent.com/90702710/206855052-88e950fc-1156-4add-a249-3c586f372725.png">
 
-#### 2. Kalian diminta untuk melakukan drop semua TCP dan UDP dari luar Topologi kalian pada server yang merupakan DHCP Server demi menjaga keamanan.
+### 2. Kalian diminta untuk melakukan drop semua TCP dan UDP dari luar Topologi kalian pada server yang merupakan DHCP Server demi menjaga keamanan.
 - WISE
 ```
 iptables -A INPUT -p tcp --dport 80 -j DROP
@@ -370,7 +371,7 @@ iptables -A INPUT -p udp --dport 80 -j DROP
 Test ping google.com(https) vs ping monta.if.its.ac.id(http)
 <img width="422" alt="image" src="https://user-images.githubusercontent.com/90702710/206855206-2f0acf83-f4f2-40f7-b3d6-583ef3856bd6.png">
 
-#### 3. Loid meminta kalian untuk membatasi DHCP dan DNS Server hanya boleh menerima maksimal 2 koneksi ICMP secara bersamaan menggunakan iptables, selebihnya didrop.
+### 3. Loid meminta kalian untuk membatasi DHCP dan DNS Server hanya boleh menerima maksimal 2 koneksi ICMP secara bersamaan menggunakan iptables, selebihnya didrop.
 - WISE dan Eden
 ```
     iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
@@ -379,7 +380,7 @@ Test ping google.com(https) vs ping monta.if.its.ac.id(http)
 - Hasil
 <img width="960" alt="image" src="https://user-images.githubusercontent.com/90702710/206854263-182628f6-9b2c-4816-8332-55c86cf6b3ab.png">
 
-#### 4. Akses menuju Web Server hanya diperbolehkan disaat jam kerja yaitu Senin sampai Jumat pada pukul 07.00 - 16.00.
+### 4. Akses menuju Web Server hanya diperbolehkan disaat jam kerja yaitu Senin sampai Jumat pada pukul 07.00 - 16.00.
 - Garden dan SSS
 ```
     iptables -A INPUT -d 192.198.0.120/29 -m time --timestart 07:00 --timestop 16:00 --weekdays Mon,Tue,Wed,Thu,Fri -j ACCEPT 
@@ -388,7 +389,7 @@ Test ping google.com(https) vs ping monta.if.its.ac.id(http)
 - Hasil
 <img width="381" alt="image" src="https://user-images.githubusercontent.com/90702710/206854528-35ffa79e-72af-4c3e-b496-a8e7b6d2a182.png">
 
-#### 5. Karena kita memiliki 2 Web Server, Loid ingin Ostania diatur sehingga setiap request dari client yang mengakses Garden dengan port 80 akan didistribusikan secara bergantian pada SSS dan Garden secara berurutan dan request dari client yang mengakses SSS dengan port 443 akan didistribusikan secara bergantian pada Garden dan SSS secara berurutan.
+### 5. Karena kita memiliki 2 Web Server, Loid ingin Ostania diatur sehingga setiap request dari client yang mengakses Garden dengan port 80 akan didistribusikan secara bergantian pada SSS dan Garden secara berurutan dan request dari client yang mengakses SSS dengan port 443 akan didistribusikan secara bergantian pada Garden dan SSS secara berurutan.
 - Ostania
 ```
 iptables -A PREROUTING -t nat -p tcp -d 192.198.0.114 --dport 80 -m statistic --mode nth --every 2 --packet 0 -j DNAT --to-destination 192.198.0.123:80
@@ -414,3 +415,6 @@ Pada Blackbell dan Briar
 ```
 nc 192.198.0.114 80
 ```
+
+## Kendala
+- Masih bingung mengerjakan nomor 6
