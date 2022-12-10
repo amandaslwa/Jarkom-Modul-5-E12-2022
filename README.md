@@ -338,4 +338,22 @@ subnet 192.198.0.112 netmask 255.255.255.248 {
 
     service apache2 restart
  ```
+### Client (Forger, Desmond, Blackbell, Briar)
+```
+#!/bin/bash
+
+    echo nameserver 192.198.0.114 > /etc/resolv.conf     # IP Eden
+
+    # Menginstal Lynx
+    echo $(apt-get update)
+    echo $(apt-get install lynx -y)
+```
 ### Konfigurasi IP Tables
+#### 1. Agar topologi yang kalian buat dapat mengakses keluar, kalian diminta untuk mengkonfigurasi Strix menggunakan iptables, tetapi Loid tidak ingin menggunakan MASQUERADE.
+
+- Strix
+```
+ip_eth0=$(/sbin/ip -o -4 addr list eth0 | awk '{print $4}' | cut -d/ -f1)
+iptables -t nat -A POSTROUTING -o eth0 -j SNAT --to-source $ip_eth0 -s 192.198.0.0/16
+```
+Variabel ip_eth0 berisi IP address dari interface eth0 router Strix. Perintah iptables di atas mirip dengan yang pernah diberikan pada modul GNS3, hanya saja `MASQUERADE` diganti dengan `-j SNAT --to-source $ip_eth0` yang artinya IP sumber dari paket yang keluar dari eth0 akan diganti menjadi IP eth0.
