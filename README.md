@@ -342,11 +342,7 @@ subnet 192.198.0.112 netmask 255.255.255.248 {
 ```
 #!/bin/bash
 
-    echo nameserver 192.198.0.114 > /etc/resolv.conf     # IP Eden
-
-    # Menginstal Lynx
-    echo $(apt-get update)
-    echo $(apt-get install lynx -y)
+    echo nameserver 192.198.0.114 > /etc/resolv.conf
 ```
 ### Konfigurasi IP Tables
 #### 1. Agar topologi yang kalian buat dapat mengakses keluar, kalian diminta untuk mengkonfigurasi Strix menggunakan iptables, tetapi Loid tidak ingin menggunakan MASQUERADE.
