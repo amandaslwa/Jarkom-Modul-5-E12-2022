@@ -353,3 +353,44 @@ ip_eth0=$(/sbin/ip -o -4 addr list eth0 | awk '{print $4}' | cut -d/ -f1)
 iptables -t nat -A POSTROUTING -o eth0 -j SNAT --to-source $ip_eth0 -s 192.198.0.0/16
 ```
 Variabel ip_eth0 berisi IP address dari interface eth0 router Strix. Perintah iptables di atas mirip dengan yang pernah diberikan pada modul GNS3, hanya saja `MASQUERADE` diganti dengan `-j SNAT --to-source $ip_eth0` yang artinya IP sumber dari paket yang keluar dari eth0 akan diganti menjadi IP eth0.
+
+```
+iptables -t nat -A POSTROUTING -s 192.198.0.0/21 -o eth0 -j SNAT --to-source 192.168.122.50
+```
+
+#### 2. Kalian diminta untuk melakukan drop semua TCP dan UDP dari luar Topologi kalian pada server yang merupakan DHCP Server demi menjaga keamanan.
+- WISE
+```
+iptables -A INPUT -p tcp --dport 80 -j DROP
+iptables -A INPUT -p udp --dport 80 -j DROP
+```
+
+#### 3. Loid meminta kalian untuk membatasi DHCP dan DNS Server hanya boleh menerima maksimal 2 koneksi ICMP secara bersamaan menggunakan iptables, selebihnya didrop.
+- WISE dan Eden
+```
+    iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+    iptables -A INPUT -p icmp -m connlimit --connlimit-above 2 --connlimit-mask 0 -j DROP
+```
+- Hasil
+<img width="960" alt="image" src="https://user-images.githubusercontent.com/90702710/206854263-182628f6-9b2c-4816-8332-55c86cf6b3ab.png">
+
+#### 4. Akses menuju Web Server hanya diperbolehkan disaat jam kerja yaitu Senin sampai Jumat pada pukul 07.00 - 16.00.
+- Garden dan SSS
+```
+    iptables -A INPUT -d 192.198.0.120/29 -m time --timestart 07:00 --timestop 16:00 --weekdays Mon,Tue,Wed,Thu,Fri -j ACCEPT 
+    iptables -A INPUT -d 192.198.0.120/29 -j REJECT
+```
+- Hasil
+<img width="381" alt="image" src="https://user-images.githubusercontent.com/90702710/206854528-35ffa79e-72af-4c3e-b496-a8e7b6d2a182.png">
+
+#### 5. Karena kita memiliki 2 Web Server, Loid ingin Ostania diatur sehingga setiap request dari client yang mengakses Garden dengan port 80 akan didistribusikan secara bergantian pada SSS dan Garden secara berurutan dan request dari client yang mengakses SSS dengan port 443 akan didistribusikan secara bergantian pada Garden dan SSS secara berurutan.
+- Ostania
+```
+iptables -A PREROUTING -t nat -p tcp -d 192.198.0.122 --dport 80 -m statistic --mode nth --every 2 --packet 0 -j DNAT --to-destination 192.198.0.122
+iptables -A PREROUTING -t nat -p tcp -d 192.198.0.122 --dport 80 -j DNAT --to-destination 192.198.0.123
+iptables -A PREROUTING -t nat -p tcp -d 192.198.0.123 --dport 443 -m statistic --mode nth --every 2 --packet 0 -j DNAT --to-destination 192.198.0.122
+iptables -A PREROUTING -t nat -p tcp -d 192.198.0.123 --dport 443 -j DNAT --to-destination 192.198.0.123
+
+iptables -t nat -A POSTROUTING -p tcp -d 192.198.0.122 -j SNAT --to-source 192.179.0.0
+iptables -t nat -A POSTROUTING -p tcp -d 192.198.0.123 -j SNAT --to-source 192.179.0.0
+```
