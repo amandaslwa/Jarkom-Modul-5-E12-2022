@@ -311,3 +311,31 @@ subnet 192.198.0.112 netmask 255.255.255.248 {
 
     service isc-dhcp-server restart
  ```
+ ### Garden dan SSS
+ Instalasi apache2, php, serta libapache2-mod-php7.0 dan konfigurasi Web Server.
+ ```
+ #!/bin/bash
+
+    echo nameserver 192.168.122.1 > /etc/resolv.conf     # IP Default Strix
+
+    # Instalasi Web server
+    apt-get update
+    apt-get install apache2 -y
+    apt-get install php -y
+    apt-get install libapache2-mod-php7.0 -y
+    service apache2 restart
+
+    cp /etc/apache2/sites-available/000-default.conf /etc/apache2/sites-available/wise.e12.com
+    echo " <VirtualHost *:80>
+    ServerAdmin webmaster@localhost
+    DocumentRoot /var/www/html
+    
+    ErrorLog \${APACHE_LOG_DIR}/error.log
+    CustomLog \${APACHE_LOG_DIR}/access.log combined
+</VirtualHost>" > /etc/apache2/sites-available/wise.e12.com
+
+    a2ensite wise.e12.com
+
+    service apache2 restart
+ ```
+### Konfigurasi IP Tables
