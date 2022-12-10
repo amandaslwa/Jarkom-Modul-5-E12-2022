@@ -391,13 +391,15 @@ Test ping google.com(https) vs ping monta.if.its.ac.id(http)
 #### 5. Karena kita memiliki 2 Web Server, Loid ingin Ostania diatur sehingga setiap request dari client yang mengakses Garden dengan port 80 akan didistribusikan secara bergantian pada SSS dan Garden secara berurutan dan request dari client yang mengakses SSS dengan port 443 akan didistribusikan secara bergantian pada Garden dan SSS secara berurutan.
 - Ostania
 ```
-iptables -A PREROUTING -t nat -p tcp -d 192.198.0.122 --dport 80 -m statistic --mode nth --every 2 --packet 0 -j DNAT --to-destination 192.198.0.122
-iptables -A PREROUTING -t nat -p tcp -d 192.198.0.122 --dport 80 -j DNAT --to-destination 192.198.0.123
-iptables -A PREROUTING -t nat -p tcp -d 192.198.0.123 --dport 443 -m statistic --mode nth --every 2 --packet 0 -j DNAT --to-destination 192.198.0.122
-iptables -A PREROUTING -t nat -p tcp -d 192.198.0.123 --dport 443 -j DNAT --to-destination 192.198.0.123
+iptables -A PREROUTING -t nat -p tcp -d 192.198.0.114 --dport 80 -m statistic --mode nth --every 2 --packet 0 -j DNAT --to-destination 192.198.0.123:80
+iptables -A PREROUTING -t nat -p tcp -d 192.198.0.114 --dport 80 -j DNAT --to-destination 192.198.0.122:80
+iptables -t nat -A POSTROUTING -p tcp -d 192.198.0.123 --dport 80 -j SNAT --to-source 192.198.0.114:80
+iptables -t nat -A POSTROUTING -p tcp -d 192.198.0.122 --dport 80 -j SNAT --to-source 192.198.0.114:80
 
-iptables -t nat -A POSTROUTING -p tcp -d 192.198.0.122 -j SNAT --to-source 192.179.0.0
-iptables -t nat -A POSTROUTING -p tcp -d 192.198.0.123 -j SNAT --to-source 192.179.0.0
+iptables -A PREROUTING -t nat -p tcp -d 192.198.0.114 --dport 443 -m statistic --mode nth --every 2 --packet 0 -j DNAT --to-destination 192.198.0.122:443 
+iptables -A PREROUTING -t nat -p tcp -d 192.198.0.114 --dport 443 -j DNAT --to-destination 192.198.0.123:443 
+iptables -t nat -A POSTROUTING -p tcp -d 192.198.0.122 --dport 443 -j SNAT --to-source 192.198.0.114:443 
+iptables -t nat -A POSTROUTING -p tcp -d 192.198.0.123 --dport 443 -j SNAT --to-source 192.198.0.114:443
 ```
 - Hasil
 Pada Garden, SSS, Blackbell, Briar
@@ -410,5 +412,5 @@ nc -l -p 80
 ```
 Pada Blackbell dan Briar
 ```
-nc 192.198.8.1 80
+nc 192.198.0.114 80
 ```
