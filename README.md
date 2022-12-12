@@ -403,17 +403,17 @@ iptables -t nat -A POSTROUTING -p tcp -d 192.198.0.123 --dport 443 -j SNAT --to-
 ```
 - Hasil
 
-Pada Garden, SSS, Blackbell, Briar
+Pada Web Server dan Client
 ```
 apt-get install netcat -y
 ```
-Pada Garden dan SSS
+Testing pada Web Server
 ```
 nc -l -p 80
 ```
 <img width="175" alt="Nomor 5 Server" src="https://user-images.githubusercontent.com/90702710/207027053-fff49173-05d8-4cb4-9c0c-4114687c14ed.png">
 
-Pada Blackbell dan Briar
+Testing pada Client
 ```
 nc 192.198.0.114 80
 ```
