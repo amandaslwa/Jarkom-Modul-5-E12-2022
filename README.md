@@ -402,6 +402,7 @@ iptables -t nat -A POSTROUTING -p tcp -d 192.198.0.122 --dport 443 -j SNAT --to-
 iptables -t nat -A POSTROUTING -p tcp -d 192.198.0.123 --dport 443 -j SNAT --to-source 192.198.0.114:443
 ```
 - Hasil
+
 Pada Garden, SSS, Blackbell, Briar
 ```
 apt-get install netcat -y
