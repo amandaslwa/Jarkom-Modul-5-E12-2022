@@ -411,10 +411,14 @@ Pada Garden dan SSS
 ```
 nc -l -p 80
 ```
+<img width="175" alt="Nomor 5 Server" src="https://user-images.githubusercontent.com/90702710/207027053-fff49173-05d8-4cb4-9c0c-4114687c14ed.png">
+
 Pada Blackbell dan Briar
 ```
 nc 192.198.0.114 80
 ```
+<img width="242" alt="Nomor 5 Client" src="https://user-images.githubusercontent.com/90702710/207027097-7ec326ca-da9b-4617-bac2-03ea7909074f.png">
+
 
 ## Kendala
 - Masih bingung mengerjakan nomor 6
