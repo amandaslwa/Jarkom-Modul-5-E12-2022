@@ -386,7 +386,7 @@ Test ping google.com(https) vs ping monta.if.its.ac.id(http)
     iptables -A INPUT -d 192.198.0.120/29 -j REJECT
 ```
 - Hasil
-<img width="381" alt="image" src="https://user-images.githubusercontent.com/90702710/206854528-35ffa79e-72af-4c3e-b496-a8e7b6d2a182.png">
+<img width="322" alt="image" src="https://user-images.githubusercontent.com/90702710/207018780-2bccd825-8a23-4ac9-9b08-951933c65dba.png">
 
 ### 5. Karena kita memiliki 2 Web Server, Loid ingin Ostania diatur sehingga setiap request dari client yang mengakses Garden dengan port 80 akan didistribusikan secara bergantian pada SSS dan Garden secara berurutan dan request dari client yang mengakses SSS dengan port 443 akan didistribusikan secara bergantian pada Garden dan SSS secara berurutan.
 - Ostania
