@@ -418,3 +418,4 @@ nc 192.198.0.114 80
 
 ## Kendala
 - Masih bingung mengerjakan nomor 6
+- Masih belum bisa mengetes nomor 5
